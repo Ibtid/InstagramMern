@@ -49,6 +49,13 @@ mongoose.connection.once('open', () => {
         caption: postDetails.caption,
         //image:postDetails.image
       });
+    }
+    if (change.operationType === 'update') {
+      const postDetails = change.fullDocument;
+      pusher.trigger('posts', 'inserted', {
+        text: postDetails.text,
+        username: postDetails.username,
+      });
     } else {
       console.log('Unknown Triger From Pusher');
     }
@@ -79,6 +86,19 @@ app.get('/sync', (req, res) => {
       res.status(200).send(data);
     }
   });
+});
+
+app.patch('/:postId/comment', async (req, res) => {
+  const postId = req.params.postId;
+  let post;
+  try {
+    post = await dbModel.findById(postId);
+  } catch (err) {
+    console.log(err);
+  }
+  post.comments.push(req.body);
+  await post.save();
+  res.send(post);
 });
 
 //listen

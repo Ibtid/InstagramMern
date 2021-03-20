@@ -223,6 +223,7 @@ function App() {
             username={post.user}
             caption={post.caption}
             imageUrl={post.image}
+            comments={post.comments}
           />
         ))}
       </div>
